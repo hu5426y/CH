@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: studyroom-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: study_room_db
+    ports:
+      - "3307:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./backend/src/main/resources/db:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:6.2
+    container_name: studyroom-redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    container_name: studyroom-backend
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: study_room_db
+      DB_USER: root
+      DB_PASSWORD: root
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ChangeMeToAtLeast32CharsForJwtSecretKey!
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    container_name: studyroom-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
