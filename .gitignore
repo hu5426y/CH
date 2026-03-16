@@ -12,3 +12,5 @@ frontend/dist/
 
 # misc
 .DS_Store
+logs/
+run/

@@ -33,17 +33,33 @@
 
 ## 快速启动（本地）
 
+### 0) 使用统一脚本一键启动/停止
+
+```bash
+./scripts/dev-up.sh
+./scripts/dev-down.sh
+```
+
+说明：
+- `dev-up.sh` 会优先复用本机已经运行在默认端口上的 MySQL/Redis；只有端口没开时，才会自动拉起 `docker compose` 里的 MySQL/Redis。
+- 后端默认连接 `127.0.0.1:3306` 和 `127.0.0.1:6379`，并在后台启动本地 `mvn spring-boot:run` 与 `npm run dev`。
+- 启动日志输出到 `logs/backend.log`、`logs/frontend.log`，进程 PID 记录在 `run/`。
+- 如需覆盖连接参数，可在执行前设置 `DB_HOST`、`DB_PORT`、`DB_USER`、`DB_PASSWORD`、`REDIS_HOST`、`REDIS_PORT`、`JWT_SECRET`。
+- 例如：`DB_USER=你的账号 DB_PASSWORD=你的密码 ./scripts/dev-up.sh`
+
 ### 1) 启动 MySQL + Redis
 
 ```bash
 docker compose up -d mysql redis
 ```
-说明：容器 MySQL 映射为主机 `3307` 端口，避免与本机 MySQL(`3306`)冲突。
+说明：容器 MySQL 映射为主机 `3306` 端口，Redis 映射为主机 `6379` 端口。
 
 ### 2) 启动后端
 
 ```bash
 cd backend
+DB_HOST=127.0.0.1 DB_PORT=3306 DB_NAME=study_room_db DB_USER=root DB_PASSWORD=root \
+REDIS_HOST=127.0.0.1 REDIS_PORT=6379 \
 mvn spring-boot:run
 ```
 
