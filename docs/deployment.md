@@ -44,6 +44,38 @@ mvn spring-boot:run
 cd frontend && npm install && npm run dev
 ```
 
+### WSL 自动初始化
+
+适用于 Ubuntu on WSL：
+
+```bash
+chmod +x ./scripts/setup-wsl.sh ./scripts/dev-up.sh ./scripts/dev-down.sh
+./scripts/setup-wsl.sh
+./scripts/dev-up.sh
+./scripts/dev-down.sh
+```
+
+说明：
+- `setup-wsl.sh` 会自动检查并安装 JDK 17、Maven、Node 18+、MySQL、Redis、MySQL client。
+- 脚本会启动 MySQL/Redis、创建 `study_room_db`、导入 `schema.sql` 和 `seed.sql`，并写入本地 `.env.local`。
+- 默认会创建项目账号 `studyroom / studyroom`；如需自定义，可在执行前设置 `DB_USER`、`DB_PASSWORD`、`DB_NAME`、`JWT_SECRET`。
+- 如果只想装环境不执行 `npm install`，可用 `SKIP_NPM_INSTALL=1 ./scripts/setup-wsl.sh`。
+
+### Windows PowerShell
+
+适用于没有 WSL 的 Windows 环境：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\dev-up.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\dev-down.ps1
+```
+
+说明：
+- `setup.ps1` 会检查 JDK、Maven、Node、MySQL，并初始化数据库和前端依赖。
+- `dev-up.ps1` 默认复用本机 `3306/6379` 的 MySQL/Redis；端口未监听时才尝试用 Docker 容器补齐。
+- 如果本机 MySQL 账号密码不是默认 `root/root`，可在执行前设置 `$env:DB_USER`、`$env:DB_PASSWORD`、`$env:DB_NAME`。
+
 ### Docker Compose
 
 ```bash

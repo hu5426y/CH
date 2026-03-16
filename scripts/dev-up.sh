@@ -8,6 +8,24 @@ BACKEND_PID_FILE="$RUN_DIR/backend.pid"
 FRONTEND_PID_FILE="$RUN_DIR/frontend.pid"
 BACKEND_LOG_FILE="$LOG_DIR/backend.log"
 FRONTEND_LOG_FILE="$LOG_DIR/frontend.log"
+
+load_local_env() {
+  local env_file="$ROOT_DIR/.env.local"
+  local key
+  local value
+
+  [[ -f "$env_file" ]] || return 0
+
+  while IFS='=' read -r key value; do
+    [[ -n "$key" ]] || continue
+    [[ "$key" =~ ^[[:space:]]*# ]] && continue
+    [[ -n "${!key:-}" ]] && continue
+    export "$key=$value"
+  done < "$env_file"
+}
+
+load_local_env
+
 APP_DB_HOST="${DB_HOST:-127.0.0.1}"
 APP_DB_PORT="${DB_PORT:-3306}"
 APP_DB_NAME="${DB_NAME:-study_room_db}"

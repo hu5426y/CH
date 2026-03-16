@@ -36,16 +36,32 @@
 ### 0) 使用统一脚本一键启动/停止
 
 ```bash
+./scripts/setup-wsl.sh
 ./scripts/dev-up.sh
 ./scripts/dev-down.sh
 ```
 
 说明：
+- 在 WSL/Ubuntu 环境下，先执行 `setup-wsl.sh`，它会自动检查并安装 JDK 17、Maven、Node 18+、MySQL、Redis，初始化数据库，并生成 `.env.local`。
 - `dev-up.sh` 会优先复用本机已经运行在默认端口上的 MySQL/Redis；只有端口没开时，才会自动拉起 `docker compose` 里的 MySQL/Redis。
 - 后端默认连接 `127.0.0.1:3306` 和 `127.0.0.1:6379`，并在后台启动本地 `mvn spring-boot:run` 与 `npm run dev`。
+- `dev-up.sh` 也会自动读取 `.env.local`，所以 WSL setup 完成后通常不需要再手动传数据库参数。
 - 启动日志输出到 `logs/backend.log`、`logs/frontend.log`，进程 PID 记录在 `run/`。
 - 如需覆盖连接参数，可在执行前设置 `DB_HOST`、`DB_PORT`、`DB_USER`、`DB_PASSWORD`、`REDIS_HOST`、`REDIS_PORT`、`JWT_SECRET`。
 - 例如：`DB_USER=你的账号 DB_PASSWORD=你的密码 ./scripts/dev-up.sh`
+
+Windows PowerShell：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\dev-up.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\dev-down.ps1
+```
+
+说明：
+- `setup.ps1` 会检查 JDK/Maven/Node/MySQL，初始化 `study_room_db`，并执行 `npm install`。
+- `dev-up.ps1` 默认复用本机 `3306/6379` 的 MySQL/Redis；端口没开时才尝试用 Docker 容器补齐。
+- Windows 下建议先安装 Redis for Windows 兼容方案，例如 Memurai，或自行提供可用的 Redis 服务。
 
 ### 1) 启动 MySQL + Redis
 
